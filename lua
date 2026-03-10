@@ -1,393 +1,354 @@
-import { useState } from "react";
+-- Universal Hub by Delta Executor
+-- Games: SAB & ADM
 
-const scripts = {
-  SAB: [
-    {
-      name: "Freeze Trade",
-      desc: "Freeze all active trades in Steal a Brainrot",
-      icon: "❄️",
-      color: "#00cfff",
-      code: `-- SAB Freeze Trade\nloadstring(game:HttpGet('https://raw.githubusercontent.com/example/sab/freeze.lua'))()`,
+local ScreenGui = Instance.new("ScreenGui")
+local Main = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local Subtitle = Instance.new("TextLabel")
+local TabHolder = Instance.new("Frame")
+local SABTab = Instance.new("TextButton")
+local ADMTab = Instance.new("TextButton")
+local Divider = Instance.new("Frame")
+local ScrollFrame = Instance.new("ScrollingFrame")
+local UIListLayout = Instance.new("UIListLayout")
+local CloseBtn = Instance.new("TextButton")
+local StatusDot = Instance.new("Frame")
+local StatusLabel = Instance.new("TextLabel")
+
+-- Services
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+
+-- Setup GUI
+ScreenGui.Name = "UniversalHub"
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.ResetOnSpawn = false
+
+-- Main Frame
+Main.Name = "Main"
+Main.Parent = ScreenGui
+Main.BackgroundColor3 = Color3.fromRGB(10, 10, 20)
+Main.BorderSizePixel = 0
+Main.Position = UDim2.new(0.5, -230, 0.5, -200)
+Main.Size = UDim2.new(0, 460, 0, 400)
+Main.Active = true
+Main.Draggable = true
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 14)
+Instance.new("UIStroke", Main).Color = Color3.fromRGB(168, 85, 247)
+Main:FindFirstChildOfClass("UIStroke").Thickness = 1.2
+
+-- Title
+Title.Parent = Main
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 18, 0, 16)
+Title.Size = UDim2.new(0, 300, 0, 30)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "⚡ Universal Hub"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 20
+Title.TextXAlignment = Enum.TextXAlignment.Left
+
+Subtitle.Parent = Main
+Subtitle.BackgroundTransparency = 1
+Subtitle.Position = UDim2.new(0, 18, 0, 44)
+Subtitle.Size = UDim2.new(0, 300, 0, 18)
+Subtitle.Font = Enum.Font.Gotham
+Subtitle.Text = "Delta Executor  •  Select a script to inject"
+Subtitle.TextColor3 = Color3.fromRGB(120, 120, 160)
+Subtitle.TextSize = 12
+Subtitle.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Close Button
+CloseBtn.Parent = Main
+CloseBtn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+CloseBtn.Position = UDim2.new(1, -38, 0, 14)
+CloseBtn.Size = UDim2.new(0, 24, 0, 24)
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.Text = "✕"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextSize = 13
+CloseBtn.BorderSizePixel = 0
+Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 6)
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- Status dot
+StatusDot.Parent = Main
+StatusDot.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
+StatusDot.Position = UDim2.new(0, 18, 0, 72)
+StatusDot.Size = UDim2.new(0, 8, 0, 8)
+StatusDot.BorderSizePixel = 0
+Instance.new("UICorner", StatusDot).CornerRadius = UDim.new(1, 0)
+
+StatusLabel.Parent = Main
+StatusLabel.BackgroundTransparency = 1
+StatusLabel.Position = UDim2.new(0, 32, 0, 66)
+StatusLabel.Size = UDim2.new(0, 200, 0, 18)
+StatusLabel.Font = Enum.Font.Gotham
+StatusLabel.Text = "Hub Online"
+StatusLabel.TextColor3 = Color3.fromRGB(34, 197, 94)
+StatusLabel.TextSize = 11
+StatusLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Divider
+Divider.Parent = Main
+Divider.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+Divider.BorderSizePixel = 0
+Divider.Position = UDim2.new(0, 0, 0, 90)
+Divider.Size = UDim2.new(1, 0, 0, 1)
+
+-- Tab Buttons
+TabHolder.Parent = Main
+TabHolder.BackgroundTransparency = 1
+TabHolder.Position = UDim2.new(0, 12, 0, 97)
+TabHolder.Size = UDim2.new(1, -24, 0, 34)
+
+local function makeTab(btn, label, xPos)
+    btn.Parent = TabHolder
+    btn.BackgroundColor3 = Color3.fromRGB(30, 20, 50)
+    btn.Position = UDim2.new(0, xPos, 0, 0)
+    btn.Size = UDim2.new(0, 100, 1, 0)
+    btn.Font = Enum.Font.GothamBold
+    btn.Text = label
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 13
+    btn.BorderSizePixel = 0
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+    return btn
+end
+
+makeTab(SABTab, "SAB", 0)
+makeTab(ADMTab, "ADM", 108)
+
+-- Scroll Frame for script cards
+ScrollFrame.Parent = Main
+ScrollFrame.BackgroundTransparency = 1
+ScrollFrame.Position = UDim2.new(0, 12, 0, 140)
+ScrollFrame.Size = UDim2.new(1, -24, 1, -155)
+ScrollFrame.ScrollBarThickness = 3
+ScrollFrame.ScrollBarImageColor3 = Color3.fromRGB(168, 85, 247)
+ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScrollFrame.BorderSizePixel = 0
+
+UIListLayout.Parent = ScrollFrame
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Padding = UDim.new(0, 8)
+
+-- Script Data
+local Scripts = {
+    SAB = {
+        {
+            name = "Freeze Trade",
+            desc = "Freeze all active trades",
+            icon = "❄️",
+            color = Color3.fromRGB(0, 207, 255),
+            exec = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/example/sab/freeze.lua"))()
+            end
+        },
+        {
+            name = "Spawner",
+            desc = "Spawn any brainrot item instantly",
+            icon = "🧠",
+            color = Color3.fromRGB(168, 85, 247),
+            exec = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/example/sab/spawner.lua"))()
+            end
+        },
+        {
+            name = "A/P Gifter",
+            desc = "Auto-gift items to any player",
+            icon = "🎁",
+            color = Color3.fromRGB(245, 158, 11),
+            exec = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/example/sab/gifter.lua"))()
+            end
+        },
     },
-    {
-      name: "Spawner",
-      desc: "Spawn any brainrot item instantly",
-      icon: "🧠",
-      color: "#a855f7",
-      code: `-- SAB Spawner\nloadstring(game:HttpGet('https://raw.githubusercontent.com/example/sab/spawner.lua'))()`,
-    },
-    {
-      name: "A/P Gifter",
-      desc: "Auto-gift items to any player",
-      icon: "🎁",
-      color: "#f59e0b",
-      code: `-- SAB A/P Gifter\nloadstring(game:HttpGet('https://raw.githubusercontent.com/example/sab/gifter.lua'))()`,
-    },
-  ],
-  ADM: [
-    {
-      name: "House Cloner",
-      desc: "Clone any house model in ADM",
-      icon: "🏠",
-      color: "#22c55e",
-      code: `-- ADM House Cloner\nloadstring(game:HttpGet('https://raw.githubusercontent.com/example/adm/housecloner.lua'))()`,
-    },
-    {
-      name: "Spawner",
-      desc: "Spawn ADM items on demand",
-      icon: "⚡",
-      color: "#f97316",
-      code: `-- ADM Spawner\nloadstring(game:HttpGet('https://raw.githubusercontent.com/example/adm/spawner.lua'))()`,
-    },
-    {
-      name: "Freeze Trader",
-      desc: "Lock trade windows in ADM",
-      icon: "🧊",
-      color: "#38bdf8",
-      code: `-- ADM Freeze Trader\nloadstring(game:HttpGet('https://raw.githubusercontent.com/example/adm/freezetrade.lua'))()`,
-    },
-  ],
-};
-
-const gameColors = {
-  SAB: { from: "#7c3aed", to: "#06b6d4", accent: "#a855f7" },
-  ADM: { from: "#065f46", to: "#0284c7", accent: "#22c55e" },
-};
-
-const STAGES = ["idle", "injecting", "success"];
-
-function ExecuteButton({ color, onExecute }) {
-  const [stage, setStage] = useState("idle");
-  const [progress, setProgress] = useState(0);
-
-  const handleClick = () => {
-    if (stage !== "idle") return;
-    setStage("injecting");
-    setProgress(0);
-
-    let p = 0;
-    const interval = setInterval(() => {
-      p += Math.random() * 18 + 5;
-      if (p >= 100) {
-        p = 100;
-        clearInterval(interval);
-        setProgress(100);
-        setTimeout(() => {
-          setStage("success");
-          onExecute && onExecute();
-          setTimeout(() => {
-            setStage("idle");
-            setProgress(0);
-          }, 2200);
-        }, 200);
-      }
-      setProgress(p);
-    }, 80);
-  };
-
-  return (
-    <div style={{ position: "relative", display: "inline-block" }}>
-      <button
-        onClick={handleClick}
-        style={{
-          position: "relative",
-          padding: "7px 16px",
-          borderRadius: 8,
-          border: "none",
-          cursor: stage === "idle" ? "pointer" : "default",
-          fontWeight: 700,
-          fontSize: 12,
-          overflow: "hidden",
-          minWidth: 90,
-          transition: "box-shadow 0.3s",
-          background:
-            stage === "success"
-              ? "linear-gradient(135deg, #22c55e, #16a34a)"
-              : stage === "injecting"
-              ? "#1a1a2e"
-              : `linear-gradient(135deg, ${color}, ${color}bb)`,
-          color: "#fff",
-          boxShadow:
-            stage === "success"
-              ? "0 0 20px #22c55e99, 0 0 40px #22c55e55"
-              : stage === "injecting"
-              ? `0 0 10px ${color}40`
-              : `0 0 14px ${color}50`,
-        }}
-      >
-        {/* Progress bar fill */}
-        {stage === "injecting" && (
-          <div
-            style={{
-              position: "absolute",
-              left: 0, top: 0, bottom: 0,
-              width: `${progress}%`,
-              background: `linear-gradient(90deg, ${color}60, ${color}cc)`,
-              transition: "width 0.08s linear",
-              zIndex: 0,
-            }}
-          />
-        )}
-
-        {/* Label */}
-        <span style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", gap: 5, justifyContent: "center" }}>
-          {stage === "idle" && "Execute"}
-          {stage === "injecting" && (
-            <>
-              <span style={{ display: "inline-block", animation: "spin 0.6s linear infinite" }}>⟳</span>
-              {Math.floor(progress)}%
-            </>
-          )}
-          {stage === "success" && (
-            <>
-              <span style={{ animation: "popIn 0.3s cubic-bezier(0.175,0.885,0.32,1.275)" }}>✓</span>
-              Injected!
-            </>
-          )}
-        </span>
-      </button>
-
-      {/* Success burst rings */}
-      {stage === "success" && (
-        <>
-          <div style={{
-            position: "absolute", inset: 0, borderRadius: 8,
-            border: "2px solid #22c55e",
-            animation: "ringOut 0.6s ease-out forwards",
-            pointerEvents: "none",
-          }} />
-          <div style={{
-            position: "absolute", inset: 0, borderRadius: 8,
-            border: "2px solid #22c55e",
-            animation: "ringOut 0.6s ease-out 0.15s forwards",
-            pointerEvents: "none",
-          }} />
-        </>
-      )}
-
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes popIn {
-          0% { transform: scale(0); opacity: 0; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes ringOut {
-          0% { transform: scale(1); opacity: 0.8; }
-          100% { transform: scale(1.8); opacity: 0; }
-        }
-      `}</style>
-    </div>
-  );
+    ADM = {
+        {
+            name = "House Cloner",
+            desc = "Clone any house model in ADM",
+            icon = "🏠",
+            color = Color3.fromRGB(34, 197, 94),
+            exec = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/example/adm/housecloner.lua"))()
+            end
+        },
+        {
+            name = "Spawner",
+            desc = "Spawn ADM items on demand",
+            icon = "⚡",
+            color = Color3.fromRGB(249, 115, 22),
+            exec = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/example/adm/spawner.lua"))()
+            end
+        },
+        {
+            name = "Freeze Trader",
+            desc = "Lock trade windows in ADM",
+            icon = "🧊",
+            color = Color3.fromRGB(56, 189, 248),
+            exec = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/example/adm/freezetrade.lua"))()
+            end
+        },
+    }
 }
 
-export default function UniversalHub() {
-  const [activeGame, setActiveGame] = useState("SAB");
-  const [copied, setCopied] = useState(null);
-  const [toast, setToast] = useState(null);
+-- Toast notification
+local function showToast(message, color)
+    local toast = Instance.new("Frame")
+    toast.Parent = ScreenGui
+    toast.BackgroundColor3 = Color3.fromRGB(15, 40, 20)
+    toast.BorderSizePixel = 0
+    toast.Position = UDim2.new(0.5, -160, 0, -60)
+    toast.Size = UDim2.new(0, 320, 0, 46)
+    Instance.new("UICorner", toast).CornerRadius = UDim.new(0, 10)
+    local stroke = Instance.new("UIStroke", toast)
+    stroke.Color = color or Color3.fromRGB(34, 197, 94)
+    stroke.Thickness = 1
 
-  const handleCopy = (code, idx) => {
-    navigator.clipboard.writeText(code);
-    setCopied(idx);
-    setTimeout(() => setCopied(null), 1500);
-  };
+    local lbl = Instance.new("TextLabel", toast)
+    lbl.BackgroundTransparency = 1
+    lbl.Size = UDim2.new(1, -16, 1, 0)
+    lbl.Position = UDim2.new(0, 8, 0, 0)
+    lbl.Font = Enum.Font.GothamBold
+    lbl.Text = "✅  " .. message .. " — Injected!"
+    lbl.TextColor3 = Color3.fromRGB(74, 222, 128)
+    lbl.TextSize = 13
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
 
-  const showToast = (name) => {
-    setToast(name);
-    setTimeout(() => setToast(null), 2500);
-  };
+    -- Slide in
+    TweenService:Create(toast, TweenInfo.new(0.4, Enum.EasingStyle.Back), {
+        Position = UDim2.new(0.5, -160, 0, 20)
+    }):Play()
 
-  const gc = gameColors[activeGame];
+    task.delay(2.5, function()
+        TweenService:Create(toast, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+            Position = UDim2.new(0.5, -160, 0, -60)
+        }):Play()
+        task.delay(0.3, function() toast:Destroy() end)
+    end)
+end
 
-  return (
-    <div style={{
-      minHeight: "100vh",
-      background: "#0a0a0f",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontFamily: "'Segoe UI', sans-serif",
-      padding: "20px",
-    }}>
-      {/* Ambient glow */}
-      <div style={{
-        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-        background: `radial-gradient(ellipse at 30% 20%, ${gc.from}22 0%, transparent 60%), radial-gradient(ellipse at 70% 80%, ${gc.to}18 0%, transparent 60%)`,
-        pointerEvents: "none", transition: "background 0.6s ease",
-      }} />
+-- Build Cards
+local function buildCards(game_key)
+    for _, child in ipairs(ScrollFrame:GetChildren()) do
+        if child:IsA("Frame") then child:Destroy() end
+    end
 
-      {/* Toast notification */}
-      <div style={{
-        position: "fixed", top: 24, left: "50%", transform: `translateX(-50%) translateY(${toast ? 0 : -80}px)`,
-        background: "linear-gradient(135deg, #14532d, #166534)",
-        border: "1px solid #22c55e60",
-        borderRadius: 12,
-        padding: "12px 22px",
-        color: "#fff",
-        fontWeight: 700,
-        fontSize: 14,
-        boxShadow: "0 0 30px #22c55e50, 0 8px 32px rgba(0,0,0,0.5)",
-        transition: "transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275)",
-        zIndex: 999,
-        display: "flex", alignItems: "center", gap: 8,
-        whiteSpace: "nowrap",
-      }}>
-        <span style={{ fontSize: 16 }}>✅</span>
-        <span>{toast} — <span style={{ color: "#4ade80" }}>Successfully Injected!</span></span>
-      </div>
+    local totalHeight = 0
+    for i, s in ipairs(Scripts[game_key]) do
+        local card = Instance.new("Frame")
+        card.Parent = ScrollFrame
+        card.BackgroundColor3 = Color3.fromRGB(18, 18, 30)
+        card.BorderSizePixel = 0
+        card.Size = UDim2.new(1, 0, 0, 62)
+        card.LayoutOrder = i
+        Instance.new("UICorner", card).CornerRadius = UDim.new(0, 10)
+        local stroke = Instance.new("UIStroke", card)
+        stroke.Color = s.color
+        stroke.Transparency = 0.7
+        stroke.Thickness = 1
 
-      <div style={{
-        width: "100%", maxWidth: 560,
-        background: "rgba(15,15,25,0.95)",
-        border: `1px solid ${gc.accent}40`,
-        borderRadius: 20,
-        boxShadow: `0 0 60px ${gc.from}30, 0 0 120px ${gc.to}15, inset 0 1px 0 rgba(255,255,255,0.05)`,
-        overflow: "hidden",
-        position: "relative",
-        transition: "border-color 0.5s, box-shadow 0.5s",
-      }}>
-        {/* Header */}
-        <div style={{
-          padding: "24px 28px 18px",
-          borderBottom: `1px solid rgba(255,255,255,0.06)`,
-          background: "rgba(255,255,255,0.02)",
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-            <div style={{
-              width: 10, height: 10, borderRadius: "50%",
-              background: `linear-gradient(135deg, ${gc.from}, ${gc.to})`,
-              boxShadow: `0 0 12px ${gc.accent}`,
-              animation: "pulse 2s infinite",
-            }} />
-            <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, letterSpacing: 3, textTransform: "uppercase" }}>
-              Universal Hub
-            </span>
-          </div>
-          <h1 style={{
-            margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: -0.5,
-            background: `linear-gradient(135deg, #fff 30%, ${gc.accent})`,
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-          }}>
-            Script Executor
-          </h1>
-          <p style={{ margin: "4px 0 0", color: "rgba(255,255,255,0.35)", fontSize: 13 }}>
-            Select a game and inject your script
-          </p>
-        </div>
+        -- Accent bar
+        local bar = Instance.new("Frame", card)
+        bar.BackgroundColor3 = s.color
+        bar.BorderSizePixel = 0
+        bar.Position = UDim2.new(0, 0, 0, 10)
+        bar.Size = UDim2.new(0, 3, 0, 42)
+        Instance.new("UICorner", bar).CornerRadius = UDim.new(0, 4)
 
-        {/* Game Tabs */}
-        <div style={{ display: "flex", padding: "16px 28px 0" }}>
-          {Object.keys(scripts).map((game) => {
-            const active = activeGame === game;
-            const gclr = gameColors[game];
-            return (
-              <button
-                key={game}
-                onClick={() => setActiveGame(game)}
-                style={{
-                  flex: 1, padding: "10px 0", border: "none", cursor: "pointer",
-                  borderRadius: "10px 10px 0 0",
-                  background: active
-                    ? `linear-gradient(180deg, ${gclr.from}30, ${gclr.to}15)`
-                    : "transparent",
-                  borderBottom: active ? `2px solid ${gclr.accent}` : "2px solid transparent",
-                  color: active ? "#fff" : "rgba(255,255,255,0.3)",
-                  fontWeight: active ? 700 : 500,
-                  fontSize: 14, letterSpacing: 1,
-                  transition: "all 0.2s",
-                }}>
-                {game}
-              </button>
-            );
-          })}
-        </div>
+        -- Icon
+        local icon = Instance.new("TextLabel", card)
+        icon.BackgroundTransparency = 1
+        icon.Position = UDim2.new(0, 14, 0, 0)
+        icon.Size = UDim2.new(0, 36, 1, 0)
+        icon.Font = Enum.Font.Gotham
+        icon.Text = s.icon
+        icon.TextSize = 22
+        icon.TextColor3 = Color3.fromRGB(255, 255, 255)
 
-        <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "0 28px" }} />
+        -- Script Name
+        local nameLabel = Instance.new("TextLabel", card)
+        nameLabel.BackgroundTransparency = 1
+        nameLabel.Position = UDim2.new(0, 56, 0, 12)
+        nameLabel.Size = UDim2.new(0, 220, 0, 20)
+        nameLabel.Font = Enum.Font.GothamBold
+        nameLabel.Text = game_key .. " " .. s.name
+        nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        nameLabel.TextSize = 14
+        nameLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-        {/* Script Cards */}
-        <div style={{ padding: "20px 28px 28px", display: "flex", flexDirection: "column", gap: 12 }}>
-          {scripts[activeGame].map((script, idx) => (
-            <div key={`${activeGame}-${idx}`} style={{
-              background: "rgba(255,255,255,0.03)",
-              border: `1px solid ${script.color}25`,
-              borderRadius: 14,
-              padding: "16px 18px",
-              display: "flex", alignItems: "center", gap: 14,
-              transition: "all 0.2s",
-              position: "relative",
-              overflow: "hidden",
-            }}
-              onMouseEnter={e => e.currentTarget.style.background = `${script.color}10`}
-              onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.03)"}
-            >
-              <div style={{
-                position: "absolute", left: 0, top: 0, bottom: 0, width: 3,
-                background: `linear-gradient(180deg, ${script.color}, ${script.color}40)`,
-                borderRadius: "0 2px 2px 0",
-              }} />
+        -- Desc
+        local desc = Instance.new("TextLabel", card)
+        desc.BackgroundTransparency = 1
+        desc.Position = UDim2.new(0, 56, 0, 34)
+        desc.Size = UDim2.new(0, 200, 0, 16)
+        desc.Font = Enum.Font.Gotham
+        desc.Text = s.desc
+        desc.TextColor3 = Color3.fromRGB(100, 100, 140)
+        desc.TextSize = 11
+        desc.TextXAlignment = Enum.TextXAlignment.Left
 
-              <div style={{
-                width: 42, height: 42, borderRadius: 12, flexShrink: 0,
-                background: `${script.color}18`,
-                border: `1px solid ${script.color}35`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 20,
-              }}>
-                {script.icon}
-              </div>
+        -- Execute Button
+        local execBtn = Instance.new("TextButton", card)
+        execBtn.BackgroundColor3 = s.color
+        execBtn.Position = UDim2.new(1, -90, 0.5, -14)
+        execBtn.Size = UDim2.new(0, 80, 0, 28)
+        execBtn.Font = Enum.Font.GothamBold
+        execBtn.Text = "Execute"
+        execBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        execBtn.TextSize = 12
+        execBtn.BorderSizePixel = 0
+        Instance.new("UICorner", execBtn).CornerRadius = UDim.new(0, 7)
 
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ color: "#fff", fontWeight: 700, fontSize: 15, marginBottom: 2 }}>
-                  {activeGame} {script.name}
-                </div>
-                <div style={{ color: "rgba(255,255,255,0.38)", fontSize: 12 }}>{script.desc}</div>
-              </div>
+        execBtn.MouseButton1Click:Connect(function()
+            execBtn.Text = "..."
+            execBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+            task.delay(0.3, function()
+                execBtn.Text = "⟳ Loading"
+            end)
+            task.delay(1.2, function()
+                execBtn.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
+                execBtn.Text = "✓ Done!"
+                showToast(game_key .. " " .. s.name, s.color)
+                pcall(s.exec)
+                task.delay(2, function()
+                    execBtn.BackgroundColor3 = s.color
+                    execBtn.Text = "Execute"
+                end)
+            end)
+        end)
 
-              <div style={{ display: "flex", gap: 7, flexShrink: 0 }}>
-                <button
-                  onClick={() => handleCopy(script.code, idx)}
-                  style={{
-                    padding: "7px 13px", borderRadius: 8, border: `1px solid ${script.color}40`,
-                    background: copied === idx ? `${script.color}30` : "rgba(255,255,255,0.04)",
-                    color: copied === idx ? script.color : "rgba(255,255,255,0.6)",
-                    fontSize: 12, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
-                  }}>
-                  {copied === idx ? "✓ Copied" : "Copy"}
-                </button>
+        totalHeight = totalHeight + 62 + 8
+    end
 
-                <ExecuteButton
-                  color={script.color}
-                  onExecute={() => showToast(`${activeGame} ${script.name}`)}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+    ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+end
 
-        {/* Footer */}
-        <div style={{
-          padding: "12px 28px 18px",
-          borderTop: "1px solid rgba(255,255,255,0.05)",
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-        }}>
-          <span style={{ color: "rgba(255,255,255,0.2)", fontSize: 11 }}>
-            {scripts[activeGame].length} scripts available
-          </span>
-          <div style={{ display: "flex", alignItems: "center", gap: 5, color: "rgba(255,255,255,0.2)", fontSize: 11 }}>
-            <div style={{
-              width: 6, height: 6, borderRadius: "50%", background: "#22c55e",
-              boxShadow: "0 0 8px #22c55e",
-            }} />
-            Hub Online
-          </div>
-        </div>
-      </div>
+-- Tab switching
+local activeTab = "SAB"
 
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(0.85); }
-        }
-      `}</style>
-    </div>
-  );
-}
+local function setTab(key)
+    activeTab = key
+    buildCards(key)
+    if key == "SAB" then
+        SABTab.BackgroundColor3 = Color3.fromRGB(80, 30, 120)
+        ADMTab.BackgroundColor3 = Color3.fromRGB(30, 20, 50)
+        Main:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(168, 85, 247)
+    else
+        ADMTab.BackgroundColor3 = Color3.fromRGB(20, 80, 50)
+        SABTab.BackgroundColor3 = Color3.fromRGB(30, 20, 50)
+        Main:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(34, 197, 94)
+    end
+end
+
+SABTab.MouseButton1Click:Connect(function() setTab("SAB") end)
+ADMTab.MouseButton1Click:Connect(function() setTab("ADM") end)
+
+-- Init
+setTab("SAB")

@@ -192,7 +192,7 @@ local Scripts = {
             icon = "🧊",
             color = Color3.fromRGB(56, 189, 248),
             exec = function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/example/adm/freezetrade.lua"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/fvshub/adm-freeze-trader/refs/heads/main/lua"))()
             end
         },
     }

@@ -183,7 +183,7 @@ local Scripts = {
             icon = "⚡",
             color = Color3.fromRGB(249, 115, 22),
             exec = function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/example/adm/spawner.lua"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/fvshub/Adm-Spawner-pets-bucks/refs/heads/main/lua"))()
             end
         },
         {

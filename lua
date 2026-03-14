@@ -8,6 +8,7 @@ local Subtitle = Instance.new("TextLabel")
 local TabHolder = Instance.new("Frame")
 local SABTab = Instance.new("TextButton")
 local ADMTab = Instance.new("TextButton")
+local SABDuelsTab = Instance.new("TextButton")
 local Divider = Instance.new("Frame")
 local ScrollFrame = Instance.new("ScrollingFrame")
 local UIListLayout = Instance.new("UIListLayout")
@@ -121,6 +122,7 @@ end
 
 makeTab(SABTab, "SAB", 0)
 makeTab(ADMTab, "ADM", 108)
+makeTab(SABDuelsTab, "SAB Duels", 216)
 
 -- Scroll Frame for script cards
 ScrollFrame.Parent = Main
@@ -193,6 +195,17 @@ local Scripts = {
             color = Color3.fromRGB(56, 189, 248),
             exec = function()
                 loadstring(game:HttpGet("https://raw.githubusercontent.com/fvshub/adm-freeze-trader/refs/heads/main/lua"))()
+            end
+        },
+    },
+    ["SAB Duels"] = {
+        {
+            name = "SAB Duels",
+            desc = "SAB Duels script",
+            icon = "⚔️",
+            color = Color3.fromRGB(255, 80, 80),
+            exec = function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/fvs-creator/sab-universal-hub-/refs/heads/main/lua"))()
             end
         },
     }
@@ -336,19 +349,25 @@ local activeTab = "SAB"
 local function setTab(key)
     activeTab = key
     buildCards(key)
+    SABTab.BackgroundColor3 = Color3.fromRGB(30, 20, 50)
+    ADMTab.BackgroundColor3 = Color3.fromRGB(30, 20, 50)
+    SABDuelsTab.BackgroundColor3 = Color3.fromRGB(30, 20, 50)
+
     if key == "SAB" then
         SABTab.BackgroundColor3 = Color3.fromRGB(80, 30, 120)
-        ADMTab.BackgroundColor3 = Color3.fromRGB(30, 20, 50)
         Main:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(168, 85, 247)
-    else
+    elseif key == "ADM" then
         ADMTab.BackgroundColor3 = Color3.fromRGB(20, 80, 50)
-        SABTab.BackgroundColor3 = Color3.fromRGB(30, 20, 50)
         Main:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(34, 197, 94)
+    elseif key == "SAB Duels" then
+        SABDuelsTab.BackgroundColor3 = Color3.fromRGB(100, 20, 20)
+        Main:FindFirstChildOfClass("UIStroke").Color = Color3.fromRGB(255, 80, 80)
     end
 end
 
 SABTab.MouseButton1Click:Connect(function() setTab("SAB") end)
 ADMTab.MouseButton1Click:Connect(function() setTab("ADM") end)
+SABDuelsTab.MouseButton1Click:Connect(function() setTab("SAB Duels") end)
 
 -- Init
 setTab("SAB")

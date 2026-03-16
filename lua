@@ -147,7 +147,7 @@ local Scripts = {
             icon = "❄️",
             color = Color3.fromRGB(0, 207, 255),
             exec = function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/fvs-creator/freeze-trade-tool-sab/refs/heads/main/loader.lua"))()
+                loadstring(game:HttpGet("https://cdn.sourceb.in/bins/sMlqtwHAOU/0"))()
             end
         },
         {

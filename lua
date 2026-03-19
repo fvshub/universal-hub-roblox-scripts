@@ -1,3 +1,11 @@
+local REVEAL_HINT_STACK = false
+local ANTI_ENV_LOG_MESSAGE =
+[[
+    What are you doing idiot dont try to dump it!?
+]]
+if not getmetatable or not setmetatable or not pcall or not debug or not rawget or not rawset or not pcall(rawset,{}," "," ") or not select or not select(2, pcall(rawget, debug, "info")) or not (select(2, pcall(rawget, debug, "info")))(print, "s") == "[C]" or not (select(2, pcall(rawget, debug, "info")))(require, "s") == "[C]" then
+  return REVEAL_HINT_STACK and tostring(ANTI_ENV_LOG_MESSAGE) or nil
+end
 -- Universal Hub by Delta Executor
 -- Games: SAB & ADM
 
